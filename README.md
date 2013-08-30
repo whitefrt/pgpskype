@@ -1,9 +1,10 @@
 pgpSkype
 ========
 
-pgpSkype - encrypted and secure skype conversations
-	copyright (c) 2013 white_frt
-	public domain
+* pgpSkype - encrypted and secure skype conversations.
+* copyright (c) 2013 white_frt
+* public domain
+	
 
 on every run the tool automatically generates a set of newly disposable public/private PGP keys using a randomly generated secret phrase.
 when starting a conversation using pgpSkype, the public key is automatically sent to the other party (which follows by automatically sending his own disposable public key).
