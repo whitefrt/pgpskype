@@ -7,9 +7,9 @@ pgpSkype
 	
 brief:
 ------
-* on each run the tool automatically generates a set of newly disposable public/private PGP keys using a randomly generated secret phrase.
-* when starting a conversation using pgpSkype, the public key is automatically sent to the other party (which follows by automatically sending his own disposable public key).
-* from that moment on, every message is automatically encrypted and decrypted using the key sets - conversations are now encrypted and secure.
+* on each run the tool automatically generates a set of newly disposable public/private PGP keys with a randomly generated secret phrase.
+* when starting a conversation, the public key is automatically sent to the other party (which follows by automatically sending his own disposable public key).
+* from that moment on, every message is automatically encrypted and decrypted with the PGP keys - conversations are now encrypted and secure.
 
 important:
 ----------
@@ -22,7 +22,7 @@ this was quickly hacked together as a personal tool, with the intention of being
 usage:
 ------
 * (skype needs to be running and online)
-* run pgpSkype.exe
+* run pgpSkype.exe,
 	a small window with your contacts will open - double click a contact to initiate a conversation - send messages only using pgpSkype's conversation window.
 	
 random notes:
