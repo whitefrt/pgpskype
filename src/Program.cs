@@ -22,6 +22,9 @@ namespace pgpskype
         static public MainForm g_mainform = null;
         static List<ConversationForm> g_listConversations = new List<ConversationForm>();
 
+        // Static messages
+        const string strPGPRequired = "[pgpSkype]: Please send your public PGP key, users are unable to send you encrypted messages.";
+
         static public void ConversationClosed(string handle)
         {
             for (int i = 0; i < g_listConversations.Count; i++)
@@ -70,7 +73,7 @@ namespace pgpskype
                     // NO public key, can't encrypt
                     ConversationError(handle, String.Format("User {0} does not have public key settings! Message not sent, user notified.", handle));
                     // Notify the user...
-                    TransmitMessage(handle, "Please send your public PGP key, users are unable to send you encrypted messages. (click on PGP Code)", false);
+                    TransmitMessage(handle, strPGPRequired, false);
                     return false;
                 }
 
@@ -110,6 +113,16 @@ namespace pgpskype
             else
             {
                 // Non encrypted messages won't appear in our chat window at all
+                // Check if this is one of our messages
+                if (msg == strPGPRequired)
+                {
+                    // Create a new conversation window (this will automatically send the pgp key)
+                    if (conv == null)
+                        conv = GetConversation(handle, true);
+                    // We already have a window, send the pgp key
+                    else
+                        conv.SendPublicPGP();
+                }
                 return;
             }
 
@@ -141,11 +154,16 @@ namespace pgpskype
                     {
                         // Successfully decrypted
                         msg = nmsg;
-//                        handle += " [E]"; // Mark encrypted
+                        //                        handle += " [E]"; // Mark encrypted
                         bEncrypted = true;
                     }
                     else
-                        ConversationError(handle, "Failed to decrypt message!");
+                    {
+                        // Failed to decrypt, resend the public PGP in case it changed
+                        ConversationError(handle, "Failed to decrypt message!, resending key");
+                        conv.SendPublicPGP();
+                        return;
+                    }
                 }
             }
 
