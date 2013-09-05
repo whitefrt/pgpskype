@@ -30,6 +30,10 @@ namespace pgpskype
             this.notifyIcon.Visible = false;
             this.notifyIcon.Text = "pgpSkype";
             AddOnlineUsers();
+
+            // Focus
+            this.Show();
+            this.Focus();
         }
 
         public class LBItem

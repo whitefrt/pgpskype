@@ -30,6 +30,7 @@ namespace pgpskype
 
             this.FormClosed += new FormClosedEventHandler(closed_event);
             this.inputTextBox.KeyDown += new KeyEventHandler(inputTextBox_KeyDown);
+            this.convoTextBox.LinkClicked += new LinkClickedEventHandler(mLinkClicked);
 
             SetHandle(user);
 
@@ -133,6 +134,11 @@ namespace pgpskype
             {
                 SendPublicPGP();
             }
+        }
+
+        private void mLinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(e.LinkText);
         }
     }
 }
