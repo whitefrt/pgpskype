@@ -128,7 +128,7 @@ namespace pgpskype
             try
             {
                 // Convert to memory stream
-                MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(strkey));
+                MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(strkey));
                 PgpSecretKeyRingBundle secretBundle = new PgpSecretKeyRingBundle(PgpUtilities.GetDecoderStream(ms));
                 if (secretBundle != null)
                 {
@@ -150,7 +150,7 @@ namespace pgpskype
             try
             {
                 // Convert to memory stream
-                MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(strkey));
+                MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(strkey));
                 bundle = new PgpPublicKeyRingBundle(PgpUtilities.GetDecoderStream(ms));
                 if (bundle == null)
                     return false;

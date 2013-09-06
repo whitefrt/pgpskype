@@ -40,10 +40,10 @@ namespace pgpskype
 
         public static string Encrypt(string input, PgpPublicKey key)
         {
-            byte[] enc = Encrypt(new MemoryStream(Encoding.ASCII.GetBytes(input)), key);
+            byte[] enc = Encrypt(new MemoryStream(Encoding.UTF8.GetBytes(input)), key);
             if (enc == null)
                 return null;
-            return Encoding.ASCII.GetString(enc);
+            return Encoding.UTF8.GetString(enc);
         }
 
         public static byte[] Encrypt(Stream input, PgpPublicKey key)
@@ -83,10 +83,10 @@ namespace pgpskype
 
         public static string Decrypt(string input, PgpSecretKeyRingBundle key, string pass)
         {
-            byte[] dec = Decrypt(new MemoryStream(Encoding.ASCII.GetBytes(input)), key, pass);
+            byte[] dec = Decrypt(new MemoryStream(Encoding.UTF8.GetBytes(input)), key, pass);
             if (dec == null)
                 return null;
-            return Encoding.ASCII.GetString(dec);
+            return Encoding.UTF8.GetString(dec);
         }
 
         static byte[] Decrypt(Stream input, PgpSecretKeyRingBundle bundle, string pass)
@@ -172,8 +172,8 @@ namespace pgpskype
             GenerateKeyPair(priv, pub, identity, pass);
 
             KeyPairOut kp = new KeyPairOut();
-            kp.strPublic = Encoding.ASCII.GetString(pub.GetBuffer());
-            kp.strPrivate = Encoding.ASCII.GetString(priv.GetBuffer());
+            kp.strPublic = Encoding.UTF8.GetString(pub.GetBuffer());
+            kp.strPrivate = Encoding.UTF8.GetString(priv.GetBuffer());
             return kp;
         }
 
