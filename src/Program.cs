@@ -135,7 +135,7 @@ namespace pgpskype
             {
                 if (g_settings.AddPublicPrivateKeys(handle, msg))
                 {
-                    conv.AddConversationText("STATUS", "Successfully imported public key for user " + handle, false);
+                    conv.AddConversationText("STATUS", "Successfully imported public key for user " + handle + " , sending messages enabled.", false);
 //                     // Optional: Send it back
 //                     conv.SendPublicPGP();
                     return;

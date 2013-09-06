@@ -47,6 +47,12 @@ namespace pgpskype
 
         public void AddConversationText(string capt, string text, bool bEncrypted)
         {
+            if (capt == m_conversationUserFullname && !IsForegroundWindow)
+            {
+                // Fash the window
+                FlashWindow.Flash(this, 5); // Flash five times
+            }
+
             // Remove the last new line
             if (text[text.Length - 1] == '\n')
                 text = text.Substring(0, text.Length - 1);
@@ -139,6 +145,24 @@ namespace pgpskype
         private void mLinkClicked(object sender, LinkClickedEventArgs e)
         {
             System.Diagnostics.Process.Start(e.LinkText);
+        }
+
+        // http://stackoverflow.com/questions/893669/determine-whether-program-is-the-active-window-in-net
+        // Check if we are in the foreground
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
+        ///<summary>Gets a value indicating whether this instance is foreground window.</summary>
+        ///<value><c>true</c> if this is the foreground window; otherwise, <c>false</c>.</value>
+        private bool IsForegroundWindow
+        {
+            get
+            {
+                var foreWnd = GetForegroundWindow();
+                return ((from f in this.MdiChildren select f.Handle)
+                    .Union(from f in this.OwnedForms select f.Handle)
+                    .Union(new IntPtr[] { this.Handle })).Contains(foreWnd);
+            }
         }
     }
 }
