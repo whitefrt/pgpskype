@@ -3,6 +3,7 @@
 /************************************************************************/
 // copyright (c) 2013 white_frt
 // public domain
+// http://pietschsoft.com/post/2009/01/26/CSharp-Flash-Window-in-Taskbar-via-Win32-FlashWindowEx
 
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,6 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 
-// http://pietschsoft.com/post/2009/01/26/CSharp-Flash-Window-in-Taskbar-via-Win32-FlashWindowEx
 namespace pgpskype
 {
     public static class FlashWindow

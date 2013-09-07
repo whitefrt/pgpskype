@@ -164,12 +164,12 @@ namespace pgpskype
             public string strPrivate;
         }
 
-        static public KeyPairOut GenerateKeyPair(string identity, string pass)
+        static public KeyPairOut GenerateKeyPair(int bits, string identity, string pass)
         {
             MemoryStream pub = new MemoryStream();
             MemoryStream priv = new MemoryStream();
 
-            GenerateKeyPair(priv, pub, identity, pass);
+            GenerateKeyPair(bits, priv, pub, identity, pass);
 
             KeyPairOut kp = new KeyPairOut();
             kp.strPublic = Encoding.UTF8.GetString(pub.GetBuffer());
@@ -177,12 +177,12 @@ namespace pgpskype
             return kp;
         }
 
-        static public void GenerateKeyPair(Stream privateOut, Stream publicOt, string identity, string pass)
+        static public void GenerateKeyPair(int bits, Stream privateOut, Stream publicOt, string identity, string pass)
         {
             IAsymmetricCipherKeyPairGenerator kpg = GeneratorUtilities.GetKeyPairGenerator("RSA");
             if (kpg == null)
                 return;
-            kpg.Init(new RsaKeyGenerationParameters(BigInteger.ValueOf(0x10001), new SecureRandom(), 1024, 25));
+            kpg.Init(new RsaKeyGenerationParameters(BigInteger.ValueOf(0x10001), new SecureRandom(), bits, 25));
 
             AsymmetricCipherKeyPair kp = kpg.GenerateKeyPair();
             if (kp == null)
@@ -196,7 +196,7 @@ namespace pgpskype
             Stream secretOut = new ArmoredOutputStream(privateOut);
 
             PgpSecretKey secretKey = new PgpSecretKey(PgpSignature.DefaultCertification, PublicKeyAlgorithmTag.RsaGeneral, publicKey, privateKey, DateTime.UtcNow,
-                                                        identity, SymmetricKeyAlgorithmTag.Cast5, passPhrase, null, null, new SecureRandom() );
+                                                        identity, SymmetricKeyAlgorithmTag.Aes256, passPhrase, null, null, new SecureRandom());
 
             secretKey.Encode(secretOut);
             secretOut.Close();

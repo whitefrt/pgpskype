@@ -42,7 +42,6 @@ namespace pgpskype
 
         // Private
         public string m_strPrivatePass = null;
-        public string m_strPrivateKey = null;
         public PgpSecretKeyRingBundle m_secretBundle = null;
 
         // All Public
@@ -133,7 +132,6 @@ namespace pgpskype
                 if (secretBundle != null)
                 {
                     m_secretBundle = secretBundle;
-                    m_strPrivateKey = strkey;
                     return true;
                 }
             }

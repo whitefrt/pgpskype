@@ -34,3 +34,12 @@ further ideas:
 * support group conversations
 * better UI
 * port to other platforms
+
+changelog:
+----------
+* [002]: increased encryption to 2048 bits RSA-AES256 combination (from 1024 bits RSA-CRYPT5) -> increased loading time
+* [002]: increased randomized secret phrase to 128 characters (from 32 characters)
+* [002]: refactored code
+* [002]: cleaned and removed dangling variables
+* [002]: async auto update notification
+* [002]: window flashes only twice when a message is received

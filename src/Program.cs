@@ -10,20 +10,41 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Security.Cryptography;
 using System.Diagnostics;
+using System.Net;
+using System.Threading;
 
 namespace pgpskype
 {
     static class Program
     {
-        // Globals - yuck
+        /************************************************************************/
+        /* Globals - yuck                                                       */
+        /************************************************************************/
+
         static public string m_localUserName = null;
         static public CSkypeManager g_skype = null;
         static public Settings g_settings = null;
         static public MainForm g_mainform = null;
         static List<ConversationForm> g_listConversations = new List<ConversationForm>();
 
-        // Static messages
+        /************************************************************************/
+        /* Constants                                                            */
+        /************************************************************************/
+
+        // Version
+        const int PGP_SKYPE_VERSION = 2;
+
+        // Messages
+        public const string strPGPSkype = "pgpSkype";
         const string strPGPRequired = "[pgpSkype]: Please send your public PGP key, users are unable to send you encrypted messages.";
+
+        // Configuration
+        const int RSA_NUM_BITS = 2048;
+        const int SECRET_PHRASE_BYTES = 128;
+
+        /************************************************************************/
+        /*                                                                      */
+        /************************************************************************/
 
         static public void ConversationClosed(string handle)
         {
@@ -171,49 +192,98 @@ namespace pgpskype
             conv.AddConversationText(conv.m_conversationUserFullname, msg, bEncrypted);
         }
 
-        public static string RandomString()
+        /************************************************************************/
+        /* Key generation wrappers                                              */
+        /************************************************************************/
+
+        public static string RandomString(int bytes)
         {
             RandomNumberGenerator rng = new RNGCryptoServiceProvider();
-            byte[] tokenData = new byte[32];
+            byte[] tokenData = new byte[bytes];
             rng.GetBytes(tokenData);
             string token = Convert.ToBase64String(tokenData);
-//            Console.WriteLine(token);
             return token;
         }
 
         public static bool GenerateRandomKeys()
         {
-            string ident = RandomString();
+            // Generate a random identity
+            string ident = RandomString(SECRET_PHRASE_BYTES);
             if (ident == null)
                 return false;
-            string pw = RandomString();
+            // Generate a random password
+            string pw = RandomString(SECRET_PHRASE_BYTES);
             if (pw == null)
                 return false;
-            PGP.KeyPairOut kp = PGP.GenerateKeyPair(ident, pw);
+            // Generate a randomized key pair
+            PGP.KeyPairOut kp = PGP.GenerateKeyPair(RSA_NUM_BITS, ident, pw);
             if (kp == null)
                 return false;
+            // Add the keys
             if (false == Program.g_settings.AddPublicPrivateKeys(null, kp.strPublic + kp.strPrivate))
                 return false;
+            // Set the main pw
             Program.g_settings.m_strPrivatePass = pw;
             return true;
         }
 
+        /************************************************************************/
+        /* Automatic updates                                                    */
+        /************************************************************************/
+
+        static bool IsURLValid(string url)
+        {
+            bool result = true;
+            try
+            {
+                WebRequest webRequest = WebRequest.Create(url);
+                webRequest.Timeout = 5000; // miliseconds
+                webRequest.Method = "HEAD";
+                webRequest.GetResponse();
+            }
+            catch
+            {
+                result = false;
+            }
+            return result;
+        }
+
+        // URL: http://github.com/whitefrt/pgpskype/raw/master/bin/pgpSkype001-win32-bin.zip
+        static void CheckIfNewVersionAvailable()
+        {
+            string url = string.Format("http://github.com/whitefrt/pgpskype/raw/master/bin/pgpSkype{0:D3}-win32-bin.zip", PGP_SKYPE_VERSION+1);
+            if (IsURLValid(url))
+            {
+                string msg = string.Format("A new version is available ({0:D3}):\n\n{1}\n\nWould you like to download the new version?", PGP_SKYPE_VERSION + 1, url);
+                DialogResult res = MessageBox.Show(msg, strPGPSkype, MessageBoxButtons.YesNo);
+                if (res == DialogResult.Yes)
+                    System.Diagnostics.Process.Start(url);
+            }
+        }
+
+        /************************************************************************/
+        /* Main program                                                         */
+        /************************************************************************/
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main()
         {
+            // Use the thread pool to asynchronously check if a new version is available
+            ThreadPool.QueueUserWorkItem(unused => CheckIfNewVersionAvailable());
+
+            // C# gui
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
             // Kick off settings
             g_settings = new Settings();
 
-            // Generate keys
+            // Generate keys - this takes a while
             if (!GenerateRandomKeys())
             {
-                MessageBox.Show("FAILED TO GENERATE KEYS!");
+                MessageBox.Show("FAILED TO GENERATE KEYS!", strPGPSkype);
                 return;
             }
 
@@ -221,7 +291,7 @@ namespace pgpskype
             g_skype = new CSkypeManager();
             if (!g_skype.Available())
             {
-                MessageBox.Show("Skype not available!");
+                MessageBox.Show("Skype is not available!", strPGPSkype);
                 return;
             }
 

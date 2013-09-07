@@ -23,12 +23,12 @@ namespace pgpskype
             InitializeComponent();
 
             // Set us
-            this.Text = "pgpSkype";// (Program.m_localUserName != null) ? Program.m_localUserName : "DefaultUser";
+            this.Text = Program.strPGPSkype;// (Program.m_localUserName != null) ? Program.m_localUserName : "DefaultUser";
             this.OnlineListBox.MouseDoubleClick += new MouseEventHandler(OnlineListBox_DoubleClick);
             this.Resize += new EventHandler(MainForm_Resize);
 
             this.notifyIcon.Visible = false;
-            this.notifyIcon.Text = "pgpSkype";
+            this.notifyIcon.Text = Program.strPGPSkype;
             AddOnlineUsers();
 
             // Focus
@@ -75,8 +75,8 @@ namespace pgpskype
 
         private void MainForm_Resize(object sender, EventArgs e)
         {
-            notifyIcon.BalloonTipTitle = "pgpSkype";
-            notifyIcon.BalloonTipText = "pgpSkype";
+            notifyIcon.BalloonTipTitle = Program.strPGPSkype;
+            notifyIcon.BalloonTipText = Program.strPGPSkype;
             notifyIcon.BalloonTipIcon = ToolTipIcon.Info;
 
             if (FormWindowState.Minimized == this.WindowState)

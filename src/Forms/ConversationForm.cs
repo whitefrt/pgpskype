@@ -49,8 +49,8 @@ namespace pgpskype
         {
             if (capt == m_conversationUserFullname && !IsForegroundWindow)
             {
-                // Fash the window
-                FlashWindow.Flash(this, 5); // Flash five times
+                // Flash the window
+                FlashWindow.Flash(this, 2);
             }
 
             // Remove the last new line
@@ -147,6 +147,9 @@ namespace pgpskype
             System.Diagnostics.Process.Start(e.LinkText);
         }
 
+        /************************************************************************/
+        /* Helpers                                                              */
+        /************************************************************************/
         // http://stackoverflow.com/questions/893669/determine-whether-program-is-the-active-window-in-net
         // Check if we are in the foreground
         [System.Runtime.InteropServices.DllImport("user32.dll")]
