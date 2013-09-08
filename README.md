@@ -21,7 +21,6 @@ this was quickly hacked together as a personal tool, with the intention of being
 
 usage:
 ------
-* (skype needs to be running and online)
 * run pgpSkype.exe,
 	a small window with your contacts will open - double click a contact to initiate a conversation - send messages only using pgpSkype's conversation window.
 	
@@ -37,6 +36,12 @@ further ideas:
 
 changelog:
 ----------
+* [003]: close vanilla skype conversation windows when encrypted
+* [003]: mark encrypted messages as seen
+* [003]: start the skype client if not running
+* [003]: proper display of user names [displayname vs handle vs fullname]
+* [003]: dynamically attach to the skype client when closed/reopened
+* [003]: moved win32 specifics to Win32.cs
 * [002]: increased encryption to 2048 bits RSA-AES256 combination (from 1024 bits RSA-CRYPT5) -> increased loading time
 * [002]: increased randomized secret phrase to 128 characters (from 32 characters)
 * [002]: refactored code

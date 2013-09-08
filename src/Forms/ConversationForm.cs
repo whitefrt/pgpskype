@@ -41,16 +41,16 @@ namespace pgpskype
         public void SetHandle(string user)
         {
             m_conversationHandle = user;
-            m_conversationUserFullname = Program.g_skype.FullnameFromHandle(m_conversationHandle);
+            m_conversationUserFullname = Program.g_skype.DisplayNameFromHandle(m_conversationHandle);
             this.Text = m_conversationUserFullname;
         }
 
         public void AddConversationText(string capt, string text, bool bEncrypted)
         {
-            if (capt == m_conversationUserFullname && !IsForegroundWindow)
+            if (capt == m_conversationUserFullname && !Win32.IsForegroundWindow(this))
             {
                 // Flash the window
-                FlashWindow.Flash(this, 2);
+                Win32.FlashWindow.Flash(this, 2);
             }
 
             // Remove the last new line
@@ -145,27 +145,6 @@ namespace pgpskype
         private void mLinkClicked(object sender, LinkClickedEventArgs e)
         {
             System.Diagnostics.Process.Start(e.LinkText);
-        }
-
-        /************************************************************************/
-        /* Helpers                                                              */
-        /************************************************************************/
-        // http://stackoverflow.com/questions/893669/determine-whether-program-is-the-active-window-in-net
-        // Check if we are in the foreground
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
-        private static extern IntPtr GetForegroundWindow();
-
-        ///<summary>Gets a value indicating whether this instance is foreground window.</summary>
-        ///<value><c>true</c> if this is the foreground window; otherwise, <c>false</c>.</value>
-        private bool IsForegroundWindow
-        {
-            get
-            {
-                var foreWnd = GetForegroundWindow();
-                return ((from f in this.MdiChildren select f.Handle)
-                    .Union(from f in this.OwnedForms select f.Handle)
-                    .Union(new IntPtr[] { this.Handle })).Contains(foreWnd);
-            }
         }
     }
 }

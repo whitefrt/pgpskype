@@ -141,7 +141,7 @@ namespace pgpskype
 
                 Stream unc = ld.GetInputStream();
                 byte[] outbytes = Streams.ReadAll(unc);
-                Console.WriteLine("Decrypt output: {0} bytes!", outbytes.Length);
+//                Console.WriteLine("Decrypt output: {0} bytes!", outbytes.Length);
                 return outbytes;
             }
             return null;

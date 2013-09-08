@@ -23,13 +23,13 @@ namespace pgpskype
             InitializeComponent();
 
             // Set us
-            this.Text = Program.strPGPSkype;// (Program.m_localUserName != null) ? Program.m_localUserName : "DefaultUser";
+            this.Text = Program.strPGPSkype;
             this.OnlineListBox.MouseDoubleClick += new MouseEventHandler(OnlineListBox_DoubleClick);
             this.Resize += new EventHandler(MainForm_Resize);
 
             this.notifyIcon.Visible = false;
             this.notifyIcon.Text = Program.strPGPSkype;
-            AddOnlineUsers();
+            RefreshForm();
 
             // Focus
             this.Show();
@@ -43,7 +43,12 @@ namespace pgpskype
             public string DisplayName { get { return m_strDisplay; } } 
         }
 
-        public void AddOnlineUsers()
+        public void RefreshForm()
+        {
+            AddOnlineUsers();
+        }
+
+        void AddOnlineUsers()
         {
             this.OnlineListBox.DataSource = null;
             this.OnlineListBox.Items.Clear();
@@ -53,27 +58,30 @@ namespace pgpskype
             foreach (CSkypeManager.TSkypeUser u in listUsers)
             {
                 LBItem item = new LBItem();
-                item.m_strDisplay = (u.FullName != "") ? u.FullName : u.Handle;
+                item.m_strDisplay = u.DisplayName;
                 item.m_strHandle = u.Handle;
                 this.OnlineListBox.Items.Add(item);
             }
         }
 
-        private void OnlineListBox_DoubleClick(object sender, MouseEventArgs args)
+        /************************************************************************/
+        /* Event Handlers                                                       */
+        /************************************************************************/
+
+        void OnlineListBox_DoubleClick(object sender, MouseEventArgs args)
         {
             if (this.OnlineListBox.SelectedItem != null)
             {
                 LBItem item = (LBItem)this.OnlineListBox.SelectedItem;
-//                MessageBox.Show(item.DisplayName);
                 Program.GetConversation(item.m_strHandle);
             }
         }
 
-        private void OnlineListBox_SelectedIndexChanged(object sender, EventArgs e)
+        void OnlineListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
         }
 
-        private void MainForm_Resize(object sender, EventArgs e)
+        void MainForm_Resize(object sender, EventArgs e)
         {
             notifyIcon.BalloonTipTitle = Program.strPGPSkype;
             notifyIcon.BalloonTipText = Program.strPGPSkype;
@@ -91,7 +99,7 @@ namespace pgpskype
             }
         }
 
-        private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+        void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             this.Show();
             this.WindowState = FormWindowState.Normal;

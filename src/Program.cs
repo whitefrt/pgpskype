@@ -32,7 +32,7 @@ namespace pgpskype
         /************************************************************************/
 
         // Version
-        const int PGP_SKYPE_VERSION = 2;
+        const int PGP_SKYPE_VERSION = 3;
 
         // Messages
         public const string strPGPSkype = "pgpSkype";
@@ -112,7 +112,7 @@ namespace pgpskype
             return true;
         }
 
-        static public void MessageReceived(string handle, string msg)
+        static public bool MessageReceived(string handle, string msg)
         {
             // Find the conversation (or create a new one) - DONT CREATE ONE YET
             ConversationForm conv = GetConversation(handle, false);
@@ -143,14 +143,15 @@ namespace pgpskype
                     // We already have a window, send the pgp key
                     else
                         conv.SendPublicPGP();
+                    return true; // we ate the message
                 }
-                return;
+                return false;
             }
 
 
             // We must have a conv by now
             if (conv == null)
-                return;
+                return false;
 
             if (IsPGPPublic)
             {
@@ -159,7 +160,7 @@ namespace pgpskype
                     conv.AddConversationText("STATUS", "Successfully imported public key for user " + handle + " , sending messages enabled.", false);
 //                     // Optional: Send it back
 //                     conv.SendPublicPGP();
-                    return;
+                    return true;
                 }
             }
 
@@ -183,13 +184,28 @@ namespace pgpskype
                         // Failed to decrypt, resend the public PGP in case it changed
                         ConversationError(handle, "Failed to decrypt message!, resending key");
                         conv.SendPublicPGP();
-                        return;
+                        return false;
                     }
                 }
             }
 
             // Add the message to the conversation
             conv.AddConversationText(conv.m_conversationUserFullname, msg, bEncrypted);
+            return true;
+        }
+
+        /************************************************************************/
+        /* Helpers                                                              */
+        /************************************************************************/
+
+        public static void CloseSkypeConversationWindow(string handle)
+        {
+            // Try to find window
+            IntPtr wnd = Win32.FindWindow("TConversationForm", handle);
+            if (wnd != IntPtr.Zero)
+            {
+                Win32.SendMessage(wnd, Win32.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+            }
         }
 
         /************************************************************************/
@@ -270,12 +286,15 @@ namespace pgpskype
         [STAThread]
         static void Main()
         {
-            // Use the thread pool to asynchronously check if a new version is available
-            ThreadPool.QueueUserWorkItem(unused => CheckIfNewVersionAvailable());
-
             // C# gui
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            // Use the thread pool to asynchronously check if a new version is available
+            ThreadPool.QueueUserWorkItem(unused => CheckIfNewVersionAvailable());
+
+            // Initialize the skype client
+            g_skype = new CSkypeManager();
 
             // Kick off settings
             g_settings = new Settings();
@@ -287,9 +306,8 @@ namespace pgpskype
                 return;
             }
 
-            // Initialize skype
-            g_skype = new CSkypeManager();
-            if (!g_skype.Available())
+            // Try to attach
+            if (!g_skype.Attach() || !g_skype.Available())
             {
                 MessageBox.Show("Skype is not available!", strPGPSkype);
                 return;
