@@ -20,22 +20,30 @@ namespace pgpskype
         public string m_conversationHandle;
         public string m_conversationUserFullname;
 
-        private Font m_fontBold = null;
-
         public ConversationForm(string user)
         {
             InitializeComponent();
 
-            m_fontBold = new Font(this.convoTextBox.Font.FontFamily, this.convoTextBox.Font.Size, FontStyle.Bold);
-
+            // Extra handlers
             this.FormClosed += new FormClosedEventHandler(closed_event);
             this.inputTextBox.KeyDown += new KeyEventHandler(inputTextBox_KeyDown);
             this.convoTextBox.LinkClicked += new LinkClickedEventHandler(mLinkClicked);
 
+            // Apply fonts
+            ApplyFonts();
+
+            // Set the handle
             SetHandle(user);
 
              // Send public key first thing
-             SendPublicPGP();
+            if (Program.g_settings.GetSettingBool("AutoSendPgpConvo"))
+                SendPublicPGP();
+        }
+
+        public void ApplyFonts()
+        {
+            this.convoTextBox.Font = Program.g_settings.m_ConversationFont;
+            this.inputTextBox.Font = this.convoTextBox.Font;
         }
 
         public void SetHandle(string user)
@@ -62,21 +70,20 @@ namespace pgpskype
 
             Font FontOldFont = this.convoTextBox.Font;
 
-            bool bUseTime = false;
-            if (bUseTime)
+            if (Program.g_settings.GetSettingBool("ShowTimestamps"))
             {
-                string strHeader = "[" + DateTime.Now.ToString() + "]";
-                if (bEncrypted == true)
-                    strHeader += "[E]";
+                string strHeader = "[" + DateTime.Now.ToString("HH:MM") + "]";
+//                 if (bEncrypted == true)
+//                     strHeader += "[E]";
                 this.convoTextBox.AppendText(strHeader + " ");
             }
             else
             {
-                if (bEncrypted == true)
-                    this.convoTextBox.AppendText("[E] ");
+//                 if (bEncrypted == true)
+//                     this.convoTextBox.AppendText("[E] ");
             }
 
-            this.convoTextBox.SelectionFont = m_fontBold;
+            this.convoTextBox.SelectionFont = Program.g_settings.m_ConversationFontBold;
             this.convoTextBox.AppendText(capt + ": ");
             this.convoTextBox.SelectionFont = FontOldFont;
             this.convoTextBox.AppendText(text/* + "\n"*/);
@@ -110,7 +117,6 @@ namespace pgpskype
             // Send the public key to the other user
             this.inputTextBox.Text = Program.g_settings.m_strPublicKey;
             SendBoxText(false); // not encrypted
-
         }
 
         private void inputTextBox_KeyDown(object sender, KeyEventArgs args)

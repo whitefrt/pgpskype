@@ -25,7 +25,7 @@ namespace pgpskype
         static public CSkypeManager g_skype = null;
         static public Settings g_settings = null;
         static public MainForm g_mainform = null;
-        static List<ConversationForm> g_listConversations = new List<ConversationForm>();
+        static public List<ConversationForm> g_listConversations = new List<ConversationForm>();
 
         /************************************************************************/
         /* Constants                                                            */
@@ -267,10 +267,24 @@ namespace pgpskype
         // URL: http://github.com/whitefrt/pgpskype/raw/master/bin/pgpSkype001-win32-bin.zip
         static void CheckIfNewVersionAvailable()
         {
-            string url = string.Format("http://github.com/whitefrt/pgpskype/raw/master/bin/pgpSkype{0:D3}-win32-bin.zip", PGP_SKYPE_VERSION+1);
-            if (IsURLValid(url))
+            string url="";
+            bool bFound = false;
+            int ver = PGP_SKYPE_VERSION;
+            while (true)
             {
-                string msg = string.Format("A new version is available ({0:D3}):\n\n{1}\n\nWould you like to download the new version?", PGP_SKYPE_VERSION + 1, url);
+                string nurl = string.Format("http://github.com/whitefrt/pgpskype/raw/master/bin/pgpSkype{0:D3}-win32-bin.zip", ver+1);
+                if (IsURLValid(nurl))
+                {
+                    url = nurl;
+                    bFound = true;
+                    ver++;
+                }
+                else 
+                    break;
+            }
+            if (bFound)
+            {
+                string msg = string.Format("A new version is available ({0:D3}):\n\n{1}\n\nWould you like to download the new version?", ver, url);
                 DialogResult res = MessageBox.Show(msg, strPGPSkype, MessageBoxButtons.YesNo);
                 if (res == DialogResult.Yes)
                     System.Diagnostics.Process.Start(url);
@@ -307,15 +321,18 @@ namespace pgpskype
             }
 
             // Try to attach
-            if (!g_skype.Attach() || !g_skype.Available())
+            if (/*!g_skype.Attach() || */!g_skype.Available())
             {
                 MessageBox.Show("Skype is not available!", strPGPSkype);
                 return;
             }
 
+            // Attach
+            g_skype.Attach();
+
             // Initialize the main form
             g_mainform = new MainForm();
-            
+
             // Boom
             Application.Run(g_mainform);
         }

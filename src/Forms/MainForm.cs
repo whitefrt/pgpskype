@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
+using pgpskype.Forms;
 
 namespace pgpskype
 {
@@ -32,11 +33,12 @@ namespace pgpskype
             RefreshForm();
 
             // Focus
+            ApplySettings();
             this.Show();
             this.Focus();
         }
 
-        public class LBItem
+        class LBItem
         {
             public string m_strDisplay;
             public string m_strHandle;
@@ -46,6 +48,13 @@ namespace pgpskype
         public void RefreshForm()
         {
             AddOnlineUsers();
+        }
+
+        public void ApplySettings()
+        {
+            // Show in taskbar
+            this.ShowInTaskbar = Program.g_settings.GetSettingBool("ShowTaskbar");
+            this.TopMost = Program.g_settings.GetSettingBool("AlwaysOnTop");
         }
 
         void AddOnlineUsers()
@@ -103,6 +112,12 @@ namespace pgpskype
         {
             this.Show();
             this.WindowState = FormWindowState.Normal;
+        }
+
+        private void SettingsButton_Click(object sender, EventArgs e)
+        {
+            SettingsForm f = new SettingsForm();
+            f.ShowDialog();
         }
     }
 }

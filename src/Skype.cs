@@ -43,6 +43,8 @@ namespace pgpskype
 
         public bool Attach()
         {
+            if (m_attached == true)
+                return true;
             if (m_skype == null)
                 return false;
             try
@@ -172,8 +174,7 @@ namespace pgpskype
                 msg.Seen = true;
 
                 // Close the conversation window if needed
-                bool bCloseSkypeConvoWindow = true;
-                if (bCloseSkypeConvoWindow)
+                if (Program.g_settings.GetSettingBool("AutoCloseConversations"))
                 {
                     // leave the conversation, todo: think of a better way - this doesn't work at all
                     if (msg.Chat != null)
