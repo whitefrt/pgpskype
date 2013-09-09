@@ -7,15 +7,15 @@ pgpSkype
 	
 brief:
 ------
-* on each run the tool automatically generates a set of newly disposable PUBLIC/PRIVATE RSA-AES PGP keys (2048 bits) with a randomly generated secret phrase (128 characters).
+* on EACH run the tool automatically generates a set of newly disposable PUBLIC/PRIVATE RSA-AES keys (2048bits) with a randomly generated secret phrase (128 characters).
 * when starting a conversation, the PUBLIC key is automatically sent to the other party (which follows by automatically sending his own disposable PUBLIC key).
-* from that moment on, every message is automatically encrypted with the target's PUBLIC key and decrypted with the PRIVATE key - conversations are now encrypted and secure.
+* from that moment on, every message is automatically encrypted with the target's PUBLIC key and decrypted with the local PRIVATE key - conversations are now encrypted and secure.
 
 important:
 ----------
-* every user has a set of a PUBLIC/PRIVATE keys, messages sent to a user must be encrypted with the user's PUBLIC key and can ONLY be decrypted locally by him using his PRIVATE key (which is per-user and only known to the recipient user).
-* the PRIVATE key is never transmitted, it is a disposable per session key and only kept locally until the tool shuts down.
-* there is no way for 3rd parties to decrypt messages without knowing the 2048 bits PRIVATE key of the recipient AND guessing the 128 characters randomly generated paraphrase needed to decrypt it - this requires hundreds of years to brute force - knowing the PUBLIC key by itself is useless.
+* every user has a one-time set of PUBLIC/PRIVATE keys, messages sent to a user must be encrypted with the user's PUBLIC key and can ONLY be decrypted locally by him using his PRIVATE key (which is per-user and ONLY known to the recipient user).
+* the PRIVATE keys are never transmitted, they are disposable per-session-per-user keys, every user has a single PRIVATE key which is only kept locally until the tool shuts down.
+* there is no way for 3rd parties to decrypt messages without knowing the 2048bits PRIVATE key of the recipient AND guessing the 128 characters randomly generated paraphrase needed to use the private key - this requires hundreds of years to brute force - knowing the PUBLIC key by itself is useless.
 
 notes:
 ------
